@@ -10,7 +10,7 @@ ngAnimi
 * **Heroku**: [http://ng-animi.herokuapp.com/](http://ng-animi.herokuapp.com/)
 * **Bower:** `bower install ng-animi`
 
-> **Verb**
+> **Animi** &mdash; Verb
   <br />
   *animi (present animas, past animis, future animos, conditional animus, volitive animu)*
   <br />
