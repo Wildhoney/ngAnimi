@@ -1,7 +1,7 @@
 {
   "name": "ng-animi",
   "version": "0.1.0",
-  "description": "ngAnimi =======",
+  "description": "",
   "main": "dist/ng-animi.js",
   "directories": {
     "example": "example",
