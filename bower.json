@@ -1,0 +1,21 @@
+{
+  "name": "ng-animi",
+  "version": "0.1.0",
+  "homepage": "https://github.com/Wildhoney/ngAnimi",
+  "authors": [
+    "Adam Timberlake <adam.timberlake@gmail.com>"
+  ],
+  "main": "dist/ng-animi.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "example/js/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-mocks": "~1.2.24"
+  }
+}

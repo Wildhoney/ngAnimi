@@ -1,0 +1,27 @@
+{
+  "name": "ng-animi",
+  "version": "0.1.0",
+  "description": "ngAnimi =======",
+  "main": "dist/ng-animi.js",
+  "directories": {
+    "example": "example",
+    "test": "tests"
+  },
+  "dependencies": {
+    "express": "^4.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Wildhoney/ngAnimi.git"
+  },
+  "author": "Adam Timberlake <adam.timberlake@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Wildhoney/ngAnimi/issues"
+  },
+  "homepage": "https://github.com/Wildhoney/ngAnimi"
+}
