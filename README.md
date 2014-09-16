@@ -16,4 +16,6 @@ ngAnimi
   <br />
   **to animate**
   
+`ngAnimi` is an Angular.js module utilising the [`animate`](http://updates.html5rocks.com/2014/05/Web-Animations---element-animate-is-now-in-Chrome-36) API with [an optional Web Animations polyfill](https://github.com/web-animations/web-animations-js) for wider support.
+  
 ---

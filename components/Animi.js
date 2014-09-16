@@ -1,5 +1,7 @@
 (function Animi($angular) {
 
+    "use strict";
+
     // Houston, wir haben ein Problem!
     var app = $angular.module('ngAnimi', []);
 
