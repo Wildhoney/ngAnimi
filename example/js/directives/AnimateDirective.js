@@ -22,15 +22,14 @@
             link: function link(scope, element) {
 
                 var style = {
-                    left: "300px",
-//                    transform: "rotate(270deg) translateY(0px) scale(.3)",
-//                    borderRadius: "50px",
-//                    background: "orange",
-////                    offset: 1,
-//                    opacity: 0
+                    transform: "rotate(270deg) translateY(0px) scale(.3)",
+                    opacity: 0,
+                    borderRadius: "50px"
                 };
 
-                animi.transition(element, style, 1000).then(function then() {
+//                var timing = { duration: 1500, iterations: 1, delay: 300 };
+
+                animi.transition(element, style, 1500).then(function then() {
 
                     console.log('Here')
 

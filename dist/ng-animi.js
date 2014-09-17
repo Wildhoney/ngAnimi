@@ -1,18 +1,79 @@
-(function Animi($angular) {
+(function($angular) {
 
     "use strict";
 
     // Houston, wir haben ein Problem!
-    var app = $angular.module('ngAnimi', []);
+    $angular.module('ngAnimi', []);
 
     /**
      * @factory animi
      * @author Adam Timberlake <adam.timberlake@gmail.com>
      * @link https://github.com/Wildhoney/ngAnimi
      */
-    app.factory('animi', ['$window', '$timeout', '$q', function animiFactory($window, $timeout, $q) {
+    $angular.module('ngAnimi').factory('animi', ['$window', '$timeout', '$q',
+
+    function animiFactory($window, $timeout, $q) {
 
         var factory = {};
+
+        /**
+         * @property class
+         * @type {Animi.Transition}
+         */
+        factory.class = new $window.Animi.Transition();
+
+        /**
+         * @method transition
+         * @param element {Object}
+         * @param styleDeclaration {Object}
+         * @param durationMilliseconds {Number}
+         * @return {$q.promise}
+         */
+        factory.transition = function transition(element, styleDeclaration, durationMilliseconds) {
+
+            var defer = $q.defer();
+
+            $timeout(function timeout() {
+
+                // Transition the element, and then resolve the promise once it is has finished.
+                factory.class.transition(element, styleDeclaration, durationMilliseconds, function finished() {
+                    defer.resolve();
+                });
+
+            }, 1);
+
+            return defer.promise;
+
+        };
+
+        return factory;
+
+    }]);
+
+})(window.angular);
+
+(function Animi($window, $angular) {
+
+    "use strict";
+
+    // Find the Animi dependencies.
+//    var Procedure = $window.Animi.Procedures;
+
+    /**
+     * @module Animi
+     * @constructor
+     */
+    var AnimiModule = $window.Animi = function Animi() {
+
+//        this.procedures = Procedure();
+
+    };
+
+    /**
+     * @property prototype
+     * @type {Object}
+     */
+    AnimiModule.prototype = {
 
         /**
          * Milliseconds to wait before we attempt to retrieve the computed styles for the element, since
@@ -21,23 +82,23 @@
          * @constant DEFER_MILLISECONDS
          * @type {Number}
          */
-        factory.DEFER_MILLISECONDS = 1;
+        DEFER_MILLISECONDS: 1,
 
         /**
          * @method throwException
          * @param message {String}
          * @return {void}
          */
-        factory.throwException = function throwException(message) {
+        throwException: function throwException(message) {
             throw "ngAnimi: " + message + ".";
-        };
+        },
 
         /**
          * @method resolveToNative
          * @param element {Object}
          * @return {Object}
          */
-        factory.resolveToNative = function resolveToNative(element) {
+        resolveToNative: function resolveToNative(element) {
 
             if (element instanceof $angular.element) {
 
@@ -48,7 +109,7 @@
 
             return element;
 
-        };
+        },
 
         /**
          * @method getDefaultStyles
@@ -56,7 +117,7 @@
          * @param styleDeclaration {Object}
          * @return {Object}
          */
-        factory.getDefaultStyles = function getDefaultStyles(nativeElement, styleDeclaration) {
+        getDefaultStyles: function getDefaultStyles(nativeElement, styleDeclaration) {
 
             var styles = {};
 
@@ -70,59 +131,86 @@
                     styles[property] = $window.getComputedStyle(nativeElement)[property];
 
                     if (styles[property] === 'auto') {
-                        factory.throwException('Property "auto" for "' + property + '" results in no animation');
+                        this.throwException('Property "auto" for "' + property + '" results in no animation');
                     }
 
                 }
 
             }
-            
+
             return styles;
 
-        };
+        }
+
+    };
+
+})(window, window.angular);
+
+(function AnimiProcedures($window) {
+
+    "use strict";
+
+    /**
+     * @module Animi
+     * @submodule Procedures
+     * @constructor
+     */
+    $window.Animi.Procedures = function() {};
+
+})(window);
+
+(function AnimiProcedures($window, $angular) {
+
+    "use strict";
+
+    /**
+     * @module Animi
+     * @submodule Transition
+     * @extends Animi
+     * @constructor
+     */
+    var Transition = $window.Animi.Transition = function() {
 
         /**
          * @method transition
          * @param element {Object}
          * @param styleDeclaration {Object}
          * @param durationMilliseconds {Number}
-         * @return {$q.promise}
+         * @param done {Function}
+         * @return {void}
          */
-        factory.transition = function transition(element, styleDeclaration, durationMilliseconds) {
+        this.transition = function transition(element, styleDeclaration, durationMilliseconds, done) {
 
-            var defer            = $q.defer(),
-                nativeElement    = this.resolveToNative(element),
+            var nativeElement    = this.resolveToNative(element),
                 angularElement   = $angular.element(element),
                 getDefaultStyles = this.getDefaultStyles;
 
-            $timeout(function timeout() {
+            // Perform the animation using the fancy new `animate` method!
+            var defaultStyles = getDefaultStyles(nativeElement, styleDeclaration),
+                animation     = nativeElement.animate([defaultStyles, styleDeclaration], durationMilliseconds);
 
-                // Perform the animation using the fancy new `animate` method!
-                var defaultStyles = getDefaultStyles(element, styleDeclaration),
-                    animation     = nativeElement.animate([defaultStyles, styleDeclaration], durationMilliseconds);
+            /**
+             * Invoked once the animation has completed.
+             *
+             * @method onFinish
+             * @return {void}
+             */
+            animation.onfinish = function onFinish() {
 
-                /**
-                 * Invoked once the animation has completed.
-                 *
-                 * @method onFinish
-                 * @return {void}
-                 */
-                animation.onfinish = function onFinish() {
+                // Define the CSS so that it's not reverted by the native `animate` method.
+                angularElement.css(styleDeclaration);
+                done();
 
-                    // Define the CSS so that it's not reverted by the native `animate` method.
-                    angularElement.css(styleDeclaration);
-                    defer.resolve(styleDeclaration);
-
-                };
-
-            }, factory.DEFER_MILLISECONDS);
-
-            return defer.promise;
+            };
 
         };
 
-        return factory;
+    };
 
-    }]);
+    /**
+     * @property prototype
+     * @type {Animi}
+     */
+    Transition.prototype = new $window.Animi();
 
-})(window.angular);
+})(window, window.angular);
