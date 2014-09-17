@@ -33,6 +33,55 @@
         };
 
         /**
+         * @method resolveToNative
+         * @param element {Object}
+         * @return {Object}
+         */
+        factory.resolveToNative = function resolveToNative(element) {
+
+            if (element instanceof $angular.element) {
+
+                // Convert the element to a native object for the purpose of obtaining its styles.
+                element = element[0];
+
+            }
+
+            return element;
+
+        };
+
+        /**
+         * @method getDefaultStyles
+         * @param nativeElement {Object}
+         * @param styleDeclaration {Object}
+         * @return {Object}
+         */
+        factory.getDefaultStyles = function getDefaultStyles(nativeElement, styleDeclaration) {
+
+            var styles = {};
+
+            for (var property in styleDeclaration) {
+
+                if (styleDeclaration.hasOwnProperty(property)) {
+
+                    // Iterate over the styles to define the initial styles to transition from, which should
+                    // be the same as those defined in the stylesheet -- if it exists, otherwise we'll use the
+                    // browser computed styles.
+                    styles[property] = $window.getComputedStyle(nativeElement)[property];
+
+                    if (styles[property] === 'auto') {
+                        factory.throwException('Property "auto" for "' + property + '" results in no animation');
+                    }
+
+                }
+
+            }
+            
+            return styles;
+
+        };
+
+        /**
          * @method transition
          * @param element {Object}
          * @param styleDeclaration {Object}
@@ -41,39 +90,16 @@
          */
         factory.transition = function transition(element, styleDeclaration, durationMilliseconds) {
 
-            var defer          = $q.defer(),
-                nativeElement  = element,
-                angularElement = $angular.element(element),
-                initialStyles  = {};
+            var defer            = $q.defer(),
+                nativeElement    = this.resolveToNative(element),
+                angularElement   = $angular.element(element),
+                getDefaultStyles = this.getDefaultStyles;
 
             $timeout(function timeout() {
 
-                if (nativeElement instanceof $angular.element) {
-
-                    // Convert the element to a native object for the purpose of obtaining its styles.
-                    nativeElement = element[0];
-
-                }
-
-                for (var property in styleDeclaration) {
-
-                    if (styleDeclaration.hasOwnProperty(property)) {
-
-                        // Iterate over the styles to define the initial styles to transition from, which should
-                        // be the same as those defined in the stylesheet -- if it exists, otherwise we'll use the
-                        // browser computed styles.
-                        initialStyles[property] = $window.getComputedStyle(nativeElement)[property];
-
-                        if (initialStyles[property] === 'auto') {
-                            factory.throwException('Property "auto" for "' + property + '" results in no animation');
-                        }
-
-                    }
-
-                }
-
                 // Perform the animation using the fancy new `animate` method!
-                var animation = nativeElement.animate([initialStyles, styleDeclaration], durationMilliseconds);
+                var defaultStyles = getDefaultStyles(element, styleDeclaration),
+                    animation     = nativeElement.animate([defaultStyles, styleDeclaration], durationMilliseconds);
 
                 /**
                  * Invoked once the animation has completed.
