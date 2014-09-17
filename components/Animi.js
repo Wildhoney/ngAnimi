@@ -1,28 +1,18 @@
-(function Animi($window, $angular) {
+(function Animi($angular) {
 
     "use strict";
 
     // Houston, wir haben ein Problem!
-    $angular.module('ngAnimi', []);
-
-    // Find the Animi dependencies.
-//    var Procedure = $window.Animi.Procedures;
+    var app = $angular.module('ngAnimi', []);
 
     /**
-     * @module Animi
-     * @constructor
+     * @factory animi
+     * @author Adam Timberlake <adam.timberlake@gmail.com>
+     * @link https://github.com/Wildhoney/ngAnimi
      */
-    var AnimiModule = $window.Animi = function Animi() {
+    app.factory('animi', ['$window', '$timeout', '$q', function animiFactory($window, $timeout, $q) {
 
-//        this.procedures = Procedure();
-
-    };
-
-    /**
-     * @property prototype
-     * @type {Object}
-     */
-    AnimiModule.prototype = {
+        var factory = {};
 
         /**
          * Milliseconds to wait before we attempt to retrieve the computed styles for the element, since
@@ -31,23 +21,23 @@
          * @constant DEFER_MILLISECONDS
          * @type {Number}
          */
-        DEFER_MILLISECONDS: 1,
+        factory.DEFER_MILLISECONDS = 1;
 
         /**
          * @method throwException
          * @param message {String}
          * @return {void}
          */
-        throwException: function throwException(message) {
+        factory.throwException = function throwException(message) {
             throw "ngAnimi: " + message + ".";
-        },
+        };
 
         /**
          * @method resolveToNative
          * @param element {Object}
          * @return {Object}
          */
-        resolveToNative: function resolveToNative(element) {
+        factory.resolveToNative = function resolveToNative(element) {
 
             if (element instanceof $angular.element) {
 
@@ -58,7 +48,7 @@
 
             return element;
 
-        },
+        };
 
         /**
          * @method getDefaultStyles
@@ -66,7 +56,7 @@
          * @param styleDeclaration {Object}
          * @return {Object}
          */
-        getDefaultStyles: function getDefaultStyles(nativeElement, styleDeclaration) {
+        factory.getDefaultStyles = function getDefaultStyles(nativeElement, styleDeclaration) {
 
             var styles = {};
 
@@ -80,17 +70,59 @@
                     styles[property] = $window.getComputedStyle(nativeElement)[property];
 
                     if (styles[property] === 'auto') {
-                        this.throwException('Property "auto" for "' + property + '" results in no animation');
+                        factory.throwException('Property "auto" for "' + property + '" results in no animation');
                     }
 
                 }
 
             }
-
+            
             return styles;
 
-        }
+        };
 
-    };
+        /**
+         * @method transition
+         * @param element {Object}
+         * @param styleDeclaration {Object}
+         * @param durationMilliseconds {Number}
+         * @return {$q.promise}
+         */
+        factory.transition = function transition(element, styleDeclaration, durationMilliseconds) {
 
-})(window, window.angular);
+            var defer            = $q.defer(),
+                nativeElement    = this.resolveToNative(element),
+                angularElement   = $angular.element(element),
+                getDefaultStyles = this.getDefaultStyles;
+
+            $timeout(function timeout() {
+
+                // Perform the animation using the fancy new `animate` method!
+                var defaultStyles = getDefaultStyles(element, styleDeclaration),
+                    animation     = nativeElement.animate([defaultStyles, styleDeclaration], durationMilliseconds);
+
+                /**
+                 * Invoked once the animation has completed.
+                 *
+                 * @method onFinish
+                 * @return {void}
+                 */
+                animation.onfinish = function onFinish() {
+
+                    // Define the CSS so that it's not reverted by the native `animate` method.
+                    angularElement.css(styleDeclaration);
+                    defer.resolve(styleDeclaration);
+
+                };
+
+            }, factory.DEFER_MILLISECONDS);
+
+            return defer.promise;
+
+        };
+
+        return factory;
+
+    }]);
+
+})(window.angular);

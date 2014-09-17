@@ -4,20 +4,17 @@
 
     describe('Animi', function() {
 
-        it('Should be able to throw an exception;', function() {
-
-            var animi = new Animi();
+        it('Should be able to throw an exception;', inject(function(animi) {
 
             expect(function() {
                 animi.throwException('Unable to do this and that');
             }).toThrow('ngAnimi: Unable to do this and that.');
 
-        });
+        }));
 
-        it('Should be able to resolve to a native element;', function() {
+        it('Should be able to resolve to a native element;', inject(function(animi) {
 
-            var animi          = new Animi(),
-                nativeElement  = document.createElement('input'),
+            var nativeElement  = document.createElement('input'),
                 angularElement = $angular.element(nativeElement);
 
             expect(angularElement instanceof $angular.element).toBeTruthy();
@@ -25,12 +22,11 @@
             expect(animi.resolveToNative(angularElement) instanceof $angular.element).toBeFalsy();
             expect(animi.resolveToNative(nativeElement) instanceof $angular.element).toBeFalsy();
 
-        });
+        }));
 
-        it('Should be able to obtain the default styles for an element;', function() {
+        it('Should be able to obtain the default styles for an element;', inject(function(animi) {
 
-            var animi            = new Animi(),
-                nativeElement    = document.createElement('section'),
+            var nativeElement    = document.createElement('section'),
                 styleDeclaration = {
                     backgroundColor: 'red',
                     left: '0px'
@@ -50,13 +46,11 @@
                 animi.getDefaultStyles(nativeElement, styleDeclaration);
             }).toThrow('ngAnimi: Property "auto" for "left" results in no animation.');
 
-        });
+        }));
 
-        it('Should be able to transition and persist the style;', function() {
+        it('Should be able to transition and persist the style;', inject(function(animi, $timeout) {
 
-            var animi            = new Animi(),
-                transition       = new Animi.Transition(),
-                nativeElement    = document.createElement('section'),
+            var nativeElement    = document.createElement('section'),
                 styleDeclaration = { left: '50px' },
                 memberObject     = {};
 
@@ -69,10 +63,10 @@
             };
             spyOn(nativeElement, 'animate').andCallThrough();
 
-            transition.transition(nativeElement, styleDeclaration, 100, function() {
-                expect(true).toBe(true);
-            });
+            var promise = animi.transition(nativeElement, styleDeclaration, 100);
+            $timeout.flush();
 
+            expect(typeof promise.then).toBe('function');
             expect(nativeElement.animate).toHaveBeenCalled();
 
             // Manually invoke the `onfinish` method as defined by the `transition` function.
@@ -81,7 +75,7 @@
             memberObject.onfinish();
             expect(nativeElement.style.left).toEqual('50px');
 
-        });
+        }));
 
     });
 
