@@ -10,6 +10,7 @@
     <script type="text/javascript" src="js/vendor/ng-animi/Animi.js"></script>
     <script type="text/javascript" src="js/vendor/ng-animi/Procedures.js"></script>
     <script type="text/javascript" src="js/vendor/ng-animi/Transition.js"></script>
+    <script type="text/javascript" src="js/vendor/ng-animi/Directives.js"></script>
     <script type="text/javascript" src="js/vendor/ng-animi/Service.js"></script>
 
     <!-- Application! -->
@@ -23,7 +24,7 @@
 </head>
 <body ng-app="animiApp" ng-controller="IndexController">
 
-    <div class="animate" data-animate></div>
+    <div class="animate" ng-animi-hide="exampleProperty" ng-procedure=""></div>
 
 </body>
 </html>

@@ -2,9 +2,6 @@
 
     "use strict";
 
-    // Houston, wir haben ein Problem!
-    $angular.module('ngAnimi', []);
-
     /**
      * @factory animi
      * @author Adam Timberlake <adam.timberlake@gmail.com>

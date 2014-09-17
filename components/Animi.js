@@ -2,6 +2,9 @@
 
     "use strict";
 
+    // Houston, wir haben ein Problem!
+    $angular.module('ngAnimi', []);
+
     // Find the Animi dependencies.
 //    var Procedure = $window.Animi.Procedures;
 
