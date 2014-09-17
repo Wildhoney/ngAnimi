@@ -79,10 +79,23 @@ module.exports = function(grunt) {
                 dest: 'releases/master.zip'
             }
 
+        },
+
+        /**
+         * @property karma
+         * @type {Object}
+         */
+        karma: {
+            unit: {
+                configFile: 'KarmaUnit.js',
+                background: false,
+                browsers: ['Firefox']
+            }
         }
 
     });
 
+    grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-compress');
@@ -90,7 +103,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('build', ['concat', 'uglify', 'copy', 'compress']);
-    grunt.registerTask('test', ['jshint']);
-    grunt.registerTask('default', ['jshint', 'concat', 'copy', 'uglify', 'compress']);
+    grunt.registerTask('test', ['jshint', 'karma']);
+    grunt.registerTask('default', ['test', 'build']);
 
 };
